@@ -1,0 +1,317 @@
+{
+  "name": "Email replay agent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -272,
+        -16
+      ],
+      "id": "33a3e705-96dd-4d0c-96fb-89a561f7c170",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.threadId }}",
+        "simple": false,
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        -16
+      ],
+      "id": "a2b936db-1d61-445b-9d7f-dd4ead3bcc1b",
+      "name": "Gmail All Details",
+      "webhookId": "4fd51c3f-9a35-462b-b5aa-3b9681c657a9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HIYXY1xyBoCc91px",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 3,
+        "filters": {
+          "labelIds": [
+            "UNREAD"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        -16
+      ],
+      "id": "ee92ad34-ca6a-48a5-8389-a9ebcfa0f446",
+      "name": "Gmail All Mails",
+      "webhookId": "f3834358-ca41-4b26-b2c3-3e7eb3cdb1ed",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HIYXY1xyBoCc91px",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.headers.subject }}Subject :\n{{ $json.from.text }}\nEmail Body :",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "<Agentintructions>\n    <Role>\n        <name> Email Reply Agent </name>\n        <Descriptions> A helpful email reply agnet </Descriptions>\n    </Role>    \n\n\n    <Goal> \n        <Primary> Draft custome but very professional email replies which are 100% humanlike. </Primary>\n        <Secondary> As an email reply agent you should not any reply but also build trust and Reputation with the person you are reply to. </Secondary>\n    </Goal>\n\n\n    <Instructions>\n        <Instruction> Once you recieve the email, you should thoroughly understad and analyse the subject line and full email body message. </Instruction>\n        <Instruction> After you read the email, Review <Details> and <Aims> to undersatnd the context of the user before drafting a reply. </Instruction>\n        <Instruction> Draft a professional Reply using <userinfo>. Use age where neccesary </Instruction>\n    </Instructions>\n\n\n    <userinfo>\n        <Details>\n            <Detail name = \"User Name\"> Akshi Champaneria </Detail>\n            <Detail name = \"Age\"> 22 </Detail>\n            <Detail name = \"Contact info\"> +91-7621033136 </Detail>\n        </Details>\n\n        <Aims>\n            <Aim name=\"Mission\">To build a career in Artificial Intelligence with practical skills.</Aim>\n            <Aim name=\"Focus\">Currently focusing on AI Automation and AI Agents.</Aim>\n            <Aim name=\"Career Goal\">To secure a good job in the AI field with hands-on experience.</Aim>\n            <Aim name=\"Learning Approach\">Prefers simple and step-by-step learning.</Aim>\n        </Aims>\n    </userinfo>\n\n    <Examples>\n        <Example>\n            <UserInput>\n                Subject: For Ai course inquiry\n                This Message is regarding an inquiry for AI Automation Course.\n            </UserInput>\n\n            <USerOutput>\n                Hi [Sender's Name],\n                Thank you for your response and for sharing the course details. The program looks very interesting and aligns well with my goal of building a career in AI Automation and AI Agents. I would like to proceed further and would appreciate guidance on the enrollment process. \n                Kindly let me know the next steps, including registration and payment details. Looking forward to your response.\n\n                Thank you for your support.\n                Best regards,\n                Akshi Champaneria\n                +91-762103313\n            </USerOutput>\n        </Example> \n\n        <Example>\n            <UserInput>\n                Subject: Application for Job Position\n                This message is regarding a job opportunity I am interested in\n            </UserInput>\n\n            <USerOutput>\n                Hi [Sender's Name],\n                Thank you for your response regarding the job opportunity. I am very interested in this position and would like to proceed further. Kindly let me know the next steps in the application process and if\n                any additional information or documents are required from my side. Looking forward to your response.\n\n                Thank you for your support.\n                Best regards,\n                Akshi Champaneria\n                +91-762103313\n            </USerOutput>\n        </Example> \n    </Examples>\n</Agentintructions>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        400,
+        -16
+      ],
+      "id": "65e5b646-809a-46de-94ec-3c8d594e44cf",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        480,
+        208
+      ],
+      "id": "188b9d47-ac5d-429b-8c0a-83879dc48e9f",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "wrHIZ037FUIw2rrq",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appgpMjXuZaw4OHVa",
+          "mode": "list",
+          "cachedResultName": "Email Reply",
+          "cachedResultUrl": "https://airtable.com/appgpMjXuZaw4OHVa"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl2jq4menLTbtsIN",
+          "mode": "list",
+          "cachedResultName": "Message Record",
+          "cachedResultUrl": "https://airtable.com/appgpMjXuZaw4OHVa/tbl2jq4menLTbtsIN"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Sender Email": "={{ $('Gmail All Details').item.json.to.value[0].name }}",
+            "From Email": "={{ $('Gmail All Details').item.json.to.value[0].address }}",
+            "Email Body": "={{ $('Gmail All Details').item.json.text }}",
+            "Body Draft Reply": "={{ $json.output }}",
+            "ThreadID": "={{ $('Gmail All Details').item.json.threadId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Sender Email",
+              "displayName": "Sender Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "From Email",
+              "displayName": "From Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email Body",
+              "displayName": "Email Body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Body Draft Reply",
+              "displayName": "Body Draft Reply",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ThreadID",
+              "displayName": "ThreadID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        -16
+      ],
+      "id": "e674540c-4a8f-460e-938b-7634654111d7",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "P3cG0bzLMyn0tj7x",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $json.fields.ThreadID }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        -16
+      ],
+      "id": "cd14eda0-b334-402c-81d0-a55d46ec930b",
+      "name": "Mark a message as read",
+      "webhookId": "029f573c-fce7-4f1c-87a9-e77ec8188106",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HIYXY1xyBoCc91px",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Gmail All Mails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail All Mails": {
+      "main": [
+        [
+          {
+            "node": "Gmail All Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail All Details": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
